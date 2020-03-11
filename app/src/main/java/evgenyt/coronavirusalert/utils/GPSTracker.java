@@ -1,4 +1,4 @@
-package evgenyt.coronavirusalert;
+package evgenyt.coronavirusalert.utils;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
