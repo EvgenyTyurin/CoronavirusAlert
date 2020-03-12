@@ -19,7 +19,6 @@ import evgenyt.coronavirusalert.R;
 import evgenyt.coronavirusalert.data.DataStorage;
 import evgenyt.coronavirusalert.data.VirusCase;
 import evgenyt.coronavirusalert.utils.GPSTracker;
-import evgenyt.coronavirusalert.utils.Utils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,14 +33,16 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Geocoder geocoder = new Geocoder(this, Locale.getDefault());
                 List<Address> addresses =
-                        geocoder.getFromLocation(gps.getLatitude(), gps.getLongitude() , 1);
-                locationTextView.setText(addresses.get(0).getCountryName() + ", " +
+                        geocoder.getFromLocation(gps.getLatitude(),
+                                gps.getLongitude() , 1);
+                locationTextView.setText("Your location: " +
+                        addresses.get(0).getCountryName() + ", " +
                         addresses.get(0).getLocality());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            locationTextView.setText("Please, set geolocation permission to application");
+            locationTextView.setText("Your location: Unknown. Permit geolocation!");
         }
         // Init virus data
         DataStorage dataStorage = DataStorage.getInstance(this,
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
             if (place.equals("-"))
                 try {
                     Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                    List<Address> addresses = geocoder.getFromLocation(virusCase.getLatitude(), virusCase.getLongitude() , 1);
+                    List<Address> addresses = geocoder.getFromLocation(virusCase.getLatitude(),
+                            virusCase.getLongitude() , 1);
                     place = addresses.get(0).getCountryName() + ", " +
                             addresses.get(0).getLocality();
                 } catch (IOException e) {
