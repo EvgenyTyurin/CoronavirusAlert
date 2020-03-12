@@ -17,8 +17,9 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textColor="#0A0908"
+        android:textColor="#447B0D"
         android:textSize="18dp"
+        android:textStyle="bold"
         />
 
     <TextView
@@ -33,6 +34,7 @@
         app:layout_constraintTop_toBottomOf="@id/text1"
         android:textColor="#0A0908"
         android:textSize="18dp"
+        android:textStyle="bold"
         />
 
     <ListView
@@ -42,6 +44,5 @@
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text2" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

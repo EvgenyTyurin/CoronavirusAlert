@@ -2,9 +2,14 @@ package evgenyt.coronavirusalert.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -71,5 +76,26 @@ public class MainActivity extends AppCompatActivity {
         alertListView.setAdapter(arrayAdapter);
     }
 
+    /** Add menu to window */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    /** Menu click handler */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Start geared weapons window
+            case R.id.menu_item_update:
+                Intent intentWeb = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=evgenyt.coronavirusalert"));
+                startActivity(intentWeb);
+                return true;
+            default: return super.onOptionsItemSelected(item);
+        }
+    }
 
 }
