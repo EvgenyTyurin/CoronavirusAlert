@@ -10,8 +10,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +19,9 @@ import evgenyt.coronavirusalert.R;
 import evgenyt.coronavirusalert.data.DataStorage;
 import evgenyt.coronavirusalert.data.VirusCase;
 import evgenyt.coronavirusalert.utils.GPSTracker;
+import evgenyt.coronavirusalert.utils.Utils;
 
 public class MainActivity extends AppCompatActivity {
-
-    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
         TextView locationTextView = findViewById(R.id.text1);
         GPSTracker gps = new GPSTracker(this);
         if(gps.canGetLocation() && gps.getLatitude() != 0){
-            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
             try {
+                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
                 List<Address> addresses =
                         geocoder.getFromLocation(gps.getLatitude(), gps.getLongitude() , 1);
                 locationTextView.setText(addresses.get(0).getCountryName() + ", " +
@@ -47,16 +44,30 @@ public class MainActivity extends AppCompatActivity {
             locationTextView.setText("Please, set geolocation permission to application");
         }
         // Init virus data
-        DataStorage dataStorage = DataStorage.getInstance();
+        DataStorage dataStorage = DataStorage.getInstance(this,
+                gps.getLatitude(), gps.getLongitude());
         List<String> alertList = new ArrayList<>();
         for (VirusCase virusCase : dataStorage.getVirusCases()) {
-            alertList.add(virusCase.getDate().toString() + ":" +
-                    virusCase.getNewPatients());
+            String place = virusCase.getPlace();
+            if (place.equals("-"))
+                try {
+                    Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                    List<Address> addresses = geocoder.getFromLocation(virusCase.getLatitude(), virusCase.getLongitude() , 1);
+                    place = addresses.get(0).getCountryName() + ", " +
+                            addresses.get(0).getLocality();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            alertList.add(virusCase.getDate().toString() + ", " +
+                    place + ", " +
+                    virusCase.getNewPatients() + " cases, " +
+                    virusCase.getDistance() + " km.");
         }
-        alertList.add("empty");
         final ListAdapter arrayAdapter = new ArrayAdapter<>(this,
                 R.layout.list_item, alertList);
         ListView alertListView = findViewById(R.id.alert_list);
         alertListView.setAdapter(arrayAdapter);
     }
+
+
 }

@@ -1,13 +1,17 @@
 package evgenyt.coronavirusalert.data;
 
+import android.content.Context;
+
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import evgenyt.coronavirusalert.utils.Utils;
 
 public class DataStorage {
 
@@ -15,31 +19,43 @@ public class DataStorage {
     private List<VirusCase> virusCases = new ArrayList<>();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
 
-    private DataStorage() {
+    private DataStorage(Context context, double latitude, double longitude) {
 
-        try (BufferedReader br = new BufferedReader(new FileReader("cases.csv"))) {
+        try {
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(context.getAssets().open("cases.csv")));
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(";");
                 virusCases.add(
                         new VirusCase(
-                            Long.valueOf(values[0]),
-                            Long.valueOf(values[1]),
-                            LocalDate.parse(values[2], formatter),
-                            Integer.valueOf(values[3])
+                                Double.valueOf(values[0]),
+                                Double.valueOf(values[1]),
+                                LocalDate.parse(values[2], formatter),
+                                Integer.valueOf(values[3]),
+                                values[4]
                         )
                 );
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
+
+        for (VirusCase virusCase: virusCases) {
+            virusCase.setDistance(
+                    Math.round(Utils.distance(virusCase.getLatitude(),
+                    virusCase.getLongitude(), latitude, longitude, "K")));
+        }
+
+        Collections.sort(virusCases);
+
     }
 
-    public static DataStorage getInstance() {
+    public static DataStorage getInstance(Context context,
+                                          double latitude,
+                                          double longitude) {
         if (dataStorage == null) {
-            dataStorage = new DataStorage();
+            dataStorage = new DataStorage(context, latitude, longitude);
         }
         return dataStorage;
     }
